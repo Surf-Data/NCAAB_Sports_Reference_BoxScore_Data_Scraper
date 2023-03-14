@@ -17,7 +17,7 @@ import sys
 def get_schools(year):
     url = "https://www.sports-reference.com/cbb/seasons/" + str(year) + "-school-stats.html"
     page = urlopen(url).read()
-    soup = BeautifulSoup(page)
+    soup = BeautifulSoup(page,features="html.parser")
     count  = 0
     table = soup.find("tbody")
     school_dict = dict()
@@ -51,7 +51,7 @@ def scrape_season(school_set, year):
         print(school + '-' + str(year))
         url = "https://www.sports-reference.com/cbb/schools/" + school + "/" + str(year) + "-schedule.html"
         page = urlopen(url).read()
-        soup = BeautifulSoup(page)
+        soup = BeautifulSoup(page,features="html.parser")
         pre_df = dict()
         if (soup.find_all("tbody")[1] != None):
             table = soup.find_all("tbody")[1]
@@ -93,9 +93,7 @@ for year in range(current_year, current_year - 5, -1):
         schools = get_schools(year)
         schools_cleaned = remove_substring_from_dict_values(schools, "\xa0NCAA")
         season_data = scrape_season(schools_cleaned, year)
-        season_data = season_data.append(season_data)
-        season_data.to_excel("/Users/criviere/Desktop/NCAAB_" + str(year) + "_Boxscores.xlsx", index = False)
+        season_data.to_csv(r"./NCAAB_" + str(year) + r"_Boxscores.csv", index = False)
     except Exception as err:
         print(err)
-        continue
 
